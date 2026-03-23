@@ -194,6 +194,14 @@ func (c *Client) removeHAEntities(id string) {
 func (c *Client) publishHADiscovery() {
 	logger.Info("MQTT: Publishing Home Assistant discovery configurations...")
 
+	// Purge legacy fan entity IDs (hwmon-index names) registered by older agent versions.
+	// Sends empty retain payloads so HA removes the stale entries from its registry.
+	for i := range 10 {
+		for j := 1; j < 20; j++ {
+			c.removeHAEntity("sensor", fmt.Sprintf("fan_hwmon%d_fan%d", i, j))
+		}
+	}
+
 	c.publishSystemDiscovery()
 	c.publishArrayDiscovery()
 	c.publishUPSDiscovery()
