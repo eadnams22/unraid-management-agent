@@ -5,6 +5,7 @@ import (
 	"bufio"
 	"context"
 	"fmt"
+	"math"
 	"os"
 	"strconv"
 	"strings"
@@ -533,11 +534,12 @@ func (c *SystemCollector) parseFanSpeeds(output string) map[string]int {
 			if len(parts) == 2 {
 				key := strings.TrimSpace(parts[0])
 				valueStr := strings.TrimSpace(parts[1])
-				if value, err := strconv.Atoi(valueStr); err == nil {
-					name := fmt.Sprintf("%s_%s", currentChip, key)
-					name = strings.ReplaceAll(name, " ", "_")
-					fanSpeeds[name] = value
-				}
+				if floatVal, err := strconv.ParseFloat(valueStr, 64); err == nil {
+				value := int(math.Round(floatVal))
+				name := fmt.Sprintf("%s_%s", currentChip, key)
+				name = strings.ReplaceAll(name, " ", "_")
+				fanSpeeds[name] = value
+			}
 			}
 		}
 	}
