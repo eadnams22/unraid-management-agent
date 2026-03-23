@@ -329,7 +329,11 @@ func (c *Client) PublishSystemInfo(info *dto.SystemInfo) error {
 	if !c.shouldPublish() {
 		return nil
 	}
-	return c.publishJSON(c.buildTopic("system"), info)
+	if err := c.publishJSON(c.buildTopic("system"), info); err != nil {
+		return err
+	}
+	go c.publishFanDiscovery(info.Fans)
+	return nil
 }
 
 // PublishArrayStatus publishes array status to MQTT.
